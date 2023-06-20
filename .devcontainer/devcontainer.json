@@ -1,11 +1,32 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  // // Dockerfile used to build this image is: https://github.com/mathworks-ref-arch/matlab-integration-for-jupyter/blob/main/matlab/Dockerfile.ubuntu-22.04
+  "image": "ghcr.io/mathworks-ref-arch/matlab-integration-for-jupyter/jupyter-matlab-notebook-ubuntu-2204:r2023a",
+  
+  // Alternatively, you can build the Dockerfile yourself by uncommenting the lines below
+  // "build": {
+  //   "dockerfile": "Dockerfile",
+  //   "args": {
+  //     "MATLAB_PRODUCT_LIST": "MATLAB Deep_Learning_Toolbox Image_Processing_Toolbox Statistics_and_Machine_Learning_Toolbox Simulink"
+  //   }
+  // },
+
+  // Uncomment and provide NLM info if required.
+  // "remoteEnv": {
+  //   "MLM_LICENSE_FILE": "27000@hyd-prabhakk-l"
+  // },
+
+  // Codespaces by default have several images on the machine.
+  // The command below frees up space on disk, and allows for larger images to be built.
+  "initializeCommand": "docker system prune --all --force",
+
   "hostRequirements": {
     "cpus": 4
   },
+  "forwardPorts": [
+    8888
+  ],
   "waitFor": "onCreateCommand",
-  "updateContentCommand": "python3 -m pip install -r requirements.txt",
-  "postCreateCommand": "",
+  "updateContentCommand": "sed -i 's/.*c.NotebookApp.allow_origin_pat.*/import os; c.NotebookApp.allow_origin_pat = \".*\" + os.getenv(\"CODESPACE_NAME\") + \".*\"/g' ~/.jupyter/jupyter_notebook_config.py",
   "customizations": {
     "codespaces": {
       "openFiles": []
@@ -13,6 +34,7 @@
     "vscode": {
       "extensions": [
         "ms-toolsai.jupyter",
+        "MathWorks.language-matlab",
         "ms-python.python"
       ]
     }
